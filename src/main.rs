@@ -2,6 +2,7 @@
 #[tokio::main]
 async fn main() {
     use axum::Router;
+    use axum::routing::post;
     use leptos::logging::log;
     use leptos::prelude::*;
     use leptos_axum::{generate_route_list, LeptosRoutes};
@@ -9,7 +10,9 @@ async fn main() {
     use meloseerr::app::*;
     use meloseerr::api;
     use meloseerr::State;
+    use reqwest::Method;
     use sqlx::sqlite::SqliteConnectOptions;
+    use tower_http::cors::CorsLayer;
 
     let conf = get_configuration(None).unwrap();
     let addr = conf.leptos_options.site_addr;
@@ -39,7 +42,13 @@ async fn main() {
             let leptos_options = state.leptos_options.clone();
             move || shell(leptos_options.clone())
         })
-        .nest("/api", api::routes())
+        .nest("/api", api::routes(state.clone()))
+        .route("/auth/refresh", post(meloseerr::auth::refresh))
+        .layer(
+            CorsLayer::new()
+                .allow_methods([Method::GET, Method::POST])
+                .allow_origin(tower_http::cors::Any)
+        )
         .fallback(leptos_axum::file_and_error_handler::<State, _>(shell))
         .with_state(state);
 

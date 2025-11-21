@@ -2,3 +2,55 @@ body {
 	font-family: sans-serif;
 	text-align: center;
 }
+
+table {
+	width: fit-content;
+}
+
+th, td {
+	padding-inline: 1rem;
+}
+table, th, td {
+	border: 1px solid black;
+}
+
+.music-grid {
+	display: grid;
+  	grid-template-columns: repeat(auto-fit, 250px);
+  	grid-auto-rows: auto;
+	gap: 1rem;
+	justify-content: center;
+
+	@media (max-width: 576px) {
+  		grid-template-columns: repeat(auto-fit, 120px);
+	}
+}
+
+.vinyl {
+	--outer-size: 1.75rem;
+	--inner-size: .875rem;
+
+	position: relative;
+
+	> div:nth-child(2) {
+		z-index: 10;
+ 		position: absolute;
+		top: calc(50% - calc(var(--outer-size) / 2));
+		left: calc(50% - calc(var(--outer-size) / 2));
+		width: var(--outer-size);
+		height: var(--outer-size);
+		background-color: black;
+		border-radius: 50%;
+	}
+
+	> div:nth-child(3) {
+		z-index: 20;
+ 		position: absolute;
+		top: calc(50% - calc(var(--inner-size)) / 2);
+		left: calc(50% - calc(var(--inner-size)) / 2);
+		width: var(--inner-size);
+		height: var(--inner-size);
+		background-color: white;
+		border-radius: 50%;
+	}
+}

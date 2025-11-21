@@ -1,9 +1,10 @@
-use leptos::{prelude::{ServerFnError, expect_context}, server};
-
-use crate::auth::User;
+use leptos::{prelude::ServerFnError, server};
 
 #[server]
 pub async fn user_count() -> Result<usize, ServerFnError> {
+    use crate::auth::User;
+    use leptos::prelude::expect_context;
+
     let state: crate::State = expect_context();
 
     User::count(&state.pool)
@@ -12,15 +13,10 @@ pub async fn user_count() -> Result<usize, ServerFnError> {
 }
 
 #[cfg(feature="ssr")]
-pub fn routes() -> axum::Router<crate::State> {
-    use axum::{Router, http::Method};
-    use tower_http::cors::CorsLayer;
+pub fn routes(state: crate::State) -> axum::Router<crate::State> {
+    use axum::Router;
 
     Router::new()
-        .layer(
-            CorsLayer::new()
-                .allow_methods([Method::GET])
-                .allow_origin(tower_http::cors::Any)
-        )
         .route("/hello-world", axum::routing::get(move || async { "Hello, World!" }))
+        .layer(crate::auth::AuthLayer{ state })
 }

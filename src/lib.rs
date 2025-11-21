@@ -1,6 +1,12 @@
 pub mod app;
+pub mod error;
+
 pub mod api;
+
+#[cfg(feature="ssr")]
 pub mod auth;
+
+pub type Result<T> = std::result::Result<T, error::Error>;
 
 #[cfg(feature="ssr")]
 #[derive(axum::extract::FromRef, Debug, Clone)]
